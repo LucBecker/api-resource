@@ -3,6 +3,7 @@ package br.com.lucbecker.apiresource.services.impl;
 import br.com.lucbecker.apiresource.domain.User;
 import br.com.lucbecker.apiresource.domain.dto.UserDTO;
 import br.com.lucbecker.apiresource.repositories.UserRepository;
+import br.com.lucbecker.apiresource.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ class UserServiceImplTest {
     public static final String NAME     = "Lucas";
     public static final String EMAIL    = "lucas@mail.com";
     public static final String PASSWORD = "123";
+    public static final String OBJETO_NAO_ENCONTRADO = "Objeto não encontrado";
     @InjectMocks
     private UserServiceImpl service;
 
@@ -58,6 +60,19 @@ class UserServiceImplTest {
         assertEquals(NAME, response.getName());
         assertEquals(NAME, response.getName());
         assertEquals(EMAIL, response.getEmail());
+    }
+
+    @Test
+    void whenFindByIdThenReturnAnObjectNotFoundException(){
+        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJETO_NAO_ENCONTRADO));
+
+        try{
+            service.findById(ID);
+        } catch (Exception ex){
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals(OBJETO_NAO_ENCONTRADO, ex.getMessage());
+        }
+
     }
 
     @Test
